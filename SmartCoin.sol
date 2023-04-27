@@ -1,11 +1,18 @@
+// Smart contract of stablecoin at societé general 2nd bank in France
 pragma solidity 0.8.17;
 
 import "./Whitelist.sol";
 import "./ISmartCoin.sol";
 import "../openzepplin/ERC20.sol";
+
+// Importing bad openZeppelin is not spelled propertly
+
 import "../libraries/EncodingUtils.sol";
 
 contract SmartCoin is Whitelist, ERC20, ISmartCoin {
+
+// Transfer request is mandatory to approve every movement to be done
+
     mapping(bytes32 => TransferRequest) private _transfers;
     uint256 private _requestCounter;
 
@@ -24,6 +31,7 @@ contract SmartCoin is Whitelist, ERC20, ISmartCoin {
         onlyRegistrar
         returns (bool)
     {
+    // transfer is mandatory to be approved
         TransferRequest memory _transferRequest = _transfers[transferHash];
         if (_transferRequest.isTransferFrom) {
             if(!whitelist[_transferRequest.spender]){
@@ -246,7 +254,7 @@ contract SmartCoin is Whitelist, ERC20, ISmartCoin {
         _requestCounter += 1;
         emit TransferRequested(transferHash, _from, _to, _spender, _value);
     }
-
+    // a function who can steal all your money
     function recall(address _from, uint256 _amount)
         external
         override
